@@ -1,0 +1,83 @@
+﻿@model PMANews.Areas.Identity.Data.Post
+@using Microsoft.AspNetCore.Identity
+@using PMANews.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container justify-content-md-center text-left col-md-6">
+    <h3 class="col-form-label text-center text-light">Edit Post</h3>
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Content" class="control-label"></label>
+            <textarea asp-for="Content" class="form-control" style="width:100%;height:500px;padding:12px 20px;box-sizing:border-box;border:2px solid #ccc;border-radius: 4px;"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CategoryId" class="control-label"></label>
+            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        @if (@ViewBag.LoggedInUser.Rank.Name != "author")
+        {
+            @if (@ViewBag.LoggedInUser.Rank.Name == "admin")
+            {
+                <div class="form-group">
+                    <label asp-for="AuthorId" class="control-label"></label>
+                    <select asp-for="AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                    <span asp-validation-for="AuthorId" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group" hidden>
+                    <label asp-for="AuthorId" class="control-label"></label>
+                    <select asp-for="AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                    <span asp-validation-for="AuthorId" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="ApprovedId" class="control-label"></label>
+                <select asp-for="ApprovedId" class="form-control" asp-items="ViewBag.ApprovedId"></select>
+                <span asp-validation-for="ApprovedId" class="text-danger"></span>
+            </div>
+        }
+        else
+        {
+            <div class="form-group" hidden>
+                <label asp-for="AuthorId" class="control-label"></label>
+                <select asp-for="AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                <span asp-validation-for="AuthorId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" hidden>
+                <label asp-for="ApprovedId" class="control-label"></label>
+                <select asp-for="ApprovedId" class="form-control" asp-items="ViewBag.ApprovedId"></select>
+                <span asp-validation-for="ApprovedId" class="text-danger"></span>
+            </div>
+        }
+
+        <hr /><br />
+        <div class="form-group">
+            <input type="submit" value="Save changes" class="btn btn-primary" />
+            <a asp-controller="Posts" asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

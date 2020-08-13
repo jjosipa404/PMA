@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-darkly.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg navbar-toggleable-sm">
+        <div class="container">
+            <a class="navbar-brand" style="text-decoration:none;color:rgb(0, 188, 140);font-weight:bold;font-size:xx-large;margin-right:10px;" asp-area="" asp-controller="Posts" asp-action="Index">News</a>
+        </div><!-- .container -->
+        <div class="container float-right">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button><!-- .navbar-toggler -->
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <ul class="nav nav-pills float-right">
+                    <partial name="_LoginPartial" />
+                </ul>
+            </div><!-- .navbar-collapse -->
+        </div><!-- .container -->
+    </nav>
+
+    <main class="container-fluid justify-content-md-center" role="main" style="padding-top:70px;">
+        @RenderBody()
+    </main>
+
+    <footer class="footer font-small text-muted">
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-2 h-50">
+            &copy; 2020 - PMA - PMFST -
+            <a class="text-muted" asp-area="" asp-controller="Home" asp-action="About">About</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+<style>
+    /*
+    body {
+        background-image: url(/img/background.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    */
+</style>

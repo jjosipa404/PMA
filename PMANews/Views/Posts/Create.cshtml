@@ -1,0 +1,36 @@
+﻿@model PMANews.Areas.Identity.Data.Post
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <div class="container justify-content-md-center text-left col-md-6">
+        <h3 class="col-form-label text-center text-light">New Post</h3>
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- TITLE -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" asp-for="Title"></label>
+                <input class="form-control input-md" asp-for="Title" required="">
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <!-- CONTENT -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" asp-for="Content"></label>
+                <textarea asp-for="Content" class="form-control" required="" style="height:300px;width:100%;"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <!-- CATEGORY -->
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-controller="Posts" asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

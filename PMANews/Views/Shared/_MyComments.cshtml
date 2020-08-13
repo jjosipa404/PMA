@@ -1,0 +1,25 @@
+﻿@model IQueryable<PMANews.Areas.Identity.Data.Comment>
+@using PMANews.Areas.Identity.Data;
+
+<button disabled class="btn btn-default">@ViewBag.NumberOfComments Comments</button>
+
+@if (Model != null)
+{
+    foreach (Comment comment in Model)
+    {
+        <div class="card text-left mb-2">
+            <div class="card-body">
+                <h5 class="card-title">&commat;@comment.User.UserName</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <time class="timeago" style="margin-top:27px;font-size:13px;color:#9c9898;margin-left:4px;" datetime="@comment.DateCreated">@comment.DateCreated</time>
+                </h6>
+                <p class="card-text">@comment.CommContent</p>
+                @if (@User.Identity.Name == comment.User.UserName)
+                {
+                    <a class="card-link text-success" asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.Id">Edit</a>
+                    <a class="card-link text-danger text-muted" asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                }
+            </div>
+        </div><!-- .card -->
+    }
+}

@@ -1,0 +1,208 @@
+﻿@model PMANews.Areas.Identity.Data.PostDetailsPageModels
+@using Microsoft.AspNetCore.Identity
+@using PMANews.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="container-fluid justify-content-center text-left">
+        <ol class="breadcrumb">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                @if (@ViewBag.UserRank == "admin" | @ViewBag.UserRank == "author")
+                {
+                    <li class="breadcrumb-item">
+                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex">My Posts</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a class="nav-link text-light" asp-controller="Posts" asp-action="Create">New post</a>
+                    </li>
+                }
+                @if (@ViewBag.UserRanke == "admin" | @ViewBag.UserRank == "editor")
+                {
+                    <li class="breadcrumb-item">
+                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex"> All Posts </a>
+                    </li>
+                }
+                @if (@ViewBag.UserRank == "admin")
+                {
+                    <li class="breadcrumb-item">
+                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex"> All Posts </a>
+                    </li>
+                }
+
+            }
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+
+    <div class="justify-content-center text-left col-md-6">
+        <div class="blog-post-meta">
+            @if (@UserManager.GetUserName(User) == @Model.Post.Author.UserName)
+            {
+                <a class="text-info" asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Post.Id">Edit</a> <span> | </span>
+                <a class="text-danger" asp-controller="Posts" asp-action="Delete" asp-route-id="@Model.Post.Id">Delete</a> <span> | </span>
+            }
+        </div>
+        <hr />
+            <div class="blog-main">
+                <div class="blog-post">
+                    <h2 class="blog-post-title" id="title"> @Html.DisplayFor(model => model.Post.Title) </h2>
+                    <p class="blog-post-meta text-muted small" id="date"> @Html.DisplayFor(model => model.Post.DateUpdated) by  @Html.DisplayFor(model => model.Post.Author.FirstName) @Html.DisplayFor(model => model.Post.Author.LastName) </p>
+                    <hr>
+                    <p id="content">  @Html.DisplayFor(model => model.Post.Content) </p>
+                </div><!-- /.blog-post -->
+            </div> <!-- /.blog-main -->
+        <hr />
+
+            <form class="AddComment">
+                <div class="form-group">
+                    <div class="form-group">
+                        <textarea id="@string.Format("{0}_{1}", "comment", @Model.Post.Id)" required="" class="form-control" placeholder="Write your comment here..." style="height:80px;width:100%;"></textarea>
+                        <span class="text-danger"></span>
+                    </div><!-- .form-group -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-default Comment" data-id="@Model.Post.Id" value="Comment">
+                            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span> View comments
+                        </button>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <input type="button" value="Comment" class="btn btn-primary addComment" data-id="@Model.Post.Id" />
+                        }
+                        else
+                        {
+                            <input disabled type="button" value="Comment" class="btn btn-primary addComment disabled" data-id="@Model.Post.Id" />
+                        }
+                    </div><!-- .form-group -->
+                </div><!-- .form-group -->
+            </form>
+        <div id="@string.Format("{0}_{1}","commentsBlock", @Model.Post.Id)"></div>
+    </div><!-- col-sm-8 -->
+
+    <div class="col-md-4 text-right mt-10">
+        <div class="container-fluid justify-content-center text-left">
+            @if (Model.RelatedPosts.Count() == 0 | Model == null)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted"> There are no related news. </h6>
+                    </div><!-- .card-body -->
+                </div><!-- .card -->
+            }
+            @foreach (var item in Model.RelatedPosts)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        @if (item.Category.Name == "POLITICS")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(99, 115, 255);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name) </a>
+                        }
+                        @if (item.Category.Name == "TECH")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(119, 119, 119);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name)</a>
+                        }
+                        @if (item.Category.Name == "SPORT")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(127, 232, 128);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name)</a>
+                        }
+                        @if (item.Category.Name == "LIFESTYLE")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(149, 50, 255);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name)</a>
+                        }
+                        @if (item.Category.Name == "NEWS")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(255, 73, 73);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name) </a>
+                        }
+                        @if (item.Category.Name == "BUSINESS")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(136, 65, 42);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name) </a>
+                        }
+                        @if (item.Category.Name == "ENTERTAINMENT")
+                        {
+                            <a class="category-font" asp-controller="Posts" asp-action="Filter" asp-route-id="@item.CategoryId" style="color:rgb(255, 107, 237);text-decoration:none;"> @Html.DisplayFor(modelItem => item.Category.Name) </a>
+                        }
+                        <a asp-controller="PostDetailsPage" asp-action="PostDetailsPage" asp-route-id="@item.Id" style="text-decoration: none;">
+                            <h4 class="card-title text-light text-decoration-none"> @Html.DisplayFor(modelItem => item.Title) </h4>
+                        </a>
+
+                    </div><!-- .card-body -->
+                </div><!-- .card -->
+            }
+        </div>
+    </div><!-- .col-md-2 -->
+
+
+
+</div><!-- .row -->
+
+<script type="text/javascript">
+    'use strict';
+    window.onload = setUp();
+    function setUp() {
+        var t = document.getElementById('content').innerHTML;
+        t = t.replace(/(\r\n|\n|\r)/gm, "<br>");
+        document.getElementById('content').innerHTML = t;
+    }
+
+    $(document).ready(function ()
+    {
+            //Click Comment
+            $('.Comment').on('click', function () {
+                var id = $(this).attr("data-id");
+                var allCommentsArea = $('<div>').addClass('allComments_' + id);
+                //function that allow us to get all comments related to post id
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetComments", "Comments")',
+                    data: { postId: id },
+                    success: function (response) {
+
+                        if ($('div').hasClass('allComments_' + id + ''))
+                        {
+                            $('div[class=allComments_' + id + ']').remove();
+                        }
+                        allCommentsArea.html(response);
+                        allCommentsArea.prependTo('#commentsBlock_' + id);
+
+                    },
+                    error: function (response) {
+                        alert('Sorry: Comments cannot be loaded !');
+                    }
+                })
+            });
+
+            //Add New Comment
+            $('.addComment').on('click', function () {
+                var postId = $(this).attr('data-id');
+                var comment_content = $('#comment_' + postId).val();
+                var dateTimeNow = new Date();
+                //alert('Hello');
+                var comment = {
+                    CommContent: comment_content,
+                    DateCreated: dateTimeNow.toLocaleString()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddComment", "Comments")',
+                    data: { comment, postId },
+                    success: function (response) {
+                        $('div[class=allComments_' + postId + ']').remove();
+                        var allCommentsArea = $('<div>').addClass('allComments_' + postId);
+                        allCommentsArea.html(response);
+                        allCommentsArea.prependTo('#commentsBlock_' + postId);
+                    },
+                    error: function (response) {
+                        alert('Sorry: Something Wrong');
+                    }
+                });
+            });
+
+    });
+</script>

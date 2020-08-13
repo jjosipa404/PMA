@@ -1,0 +1,21 @@
+﻿@model PMANews.Areas.Identity.Data.Comment
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container justify-content-md-center text-center col-md-6">
+    <h4>Are you sure you want to delete this comment?</h4>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group ">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+            <a asp-controller="PostDetailsPage" asp-action="PostDetailsPage" asp-route-id="@Model.PostId" class="btn btn-primary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+

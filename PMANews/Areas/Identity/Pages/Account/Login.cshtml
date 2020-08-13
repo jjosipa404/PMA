@@ -1,0 +1,72 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml";
+}
+
+<form class="form-horizontal" id="account" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <fieldset style="margin-top: 3em;padding:3px;">
+        <legend>Log In</legend>
+        <div class="form-group" style="float: none;">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label asp-for="Input.UserName"></label>
+                        <input asp-for="Input.UserName" class="form-control" />
+                        <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                    </div><!-- .form-group -->
+                </div><!-- .col-md-8 -->
+            </div><!-- .row -->
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" class="form-control" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div><!--.form-group -->
+                </div><!-- .col-md-8 -->
+            </div><!-- .row -->
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label asp-for="Input.RememberMe">
+                                <input asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                            </label>
+                        </div><!--.checkbox -->
+                    </div><!--.form-group -->
+                </div><!-- .col-sm-6 -->
+            </div><!-- .row -->
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="col">
+                            <button type="submit" class="btn btn-success" id="btnsignup" style="float: none;">Log In</button>
+                        </div><!-- .col -->
+                    </div><!-- .form-group -->
+                </div><!-- .col-sm-6 -->
+            </div><!-- .row -->
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <p>
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                        </p>
+                    </div><!-- .form-group -->
+                </div><!-- .col-sm-6 -->
+            </div><!-- .row -->
+        </div>
+    </fieldset>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

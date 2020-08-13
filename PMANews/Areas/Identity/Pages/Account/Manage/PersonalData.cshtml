@@ -1,0 +1,35 @@
+﻿@page
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<form class="container justify-content-center col-md-8" id="profile-form" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Input.Username"></label>
+        <input asp-for="Input.Username" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.FirstName"></label>
+        <input asp-for="Input.FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.LastName"></label>
+        <input asp-for="Input.LastName" class="form-control" />
+    </div>
+    <button id="update-profile-button" type="submit" class="btn btn-success">Save</button>
+</form>
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
