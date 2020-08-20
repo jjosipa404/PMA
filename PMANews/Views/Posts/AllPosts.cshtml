@@ -1,0 +1,85 @@
+﻿@model IEnumerable<PMANews.Areas.Identity.Data.Post>
+
+@using Microsoft.AspNetCore.Identity
+@using PMANews.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "All Posts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="row">
+        <div class="container-fluid justify-content-center text-center">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <ol class="breadcrumb">
+                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "author")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="Create">New post</a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "editor")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="AllPosts"> All Posts </a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin")
+                    {
+                        <li class="list-inline-item justify-content-end">
+                            <a class="nav-link text-light" href="/Identity/Account/Register">Register new user</a>
+                        </li>
+                    }
+
+                </ol>
+            }
+        </div>
+    </div>
+
+    <div class="container-fluid justify-content-center text-left">
+        @if (Model.Count() != 0 & Model != null)
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date Updated</th>
+                        <th>Approved</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                            <th>@Html.DisplayFor(modelItem => item.Author.FirstName) @Html.DisplayFor(modelItem => item.Author.LastName)</th>
+                            <td><time class="timeago" datetime="@item.DateUpdated"> @item.DateUpdated</time></td>
+                            <td>@Html.DisplayFor(modelItem => item.Approved.Name)</td>
+                            <td>
+                                <a class="text-info text-muted" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a class="text-success text-muted" asp-controller="PostDetailsPage" asp-action="PostDetailsPage" asp-route-id="@item.Id">Details</a> |
+                                <a class="text-danger text-muted" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="container justify-content-center text-center">
+                <h4>There are no posts to show.</h4>
+            </div>
+        }
+    </div>
+
+

@@ -37,44 +37,66 @@ namespace PMANews.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userName = User.FindFirstValue(ClaimTypes.Name);
                 ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
-                ViewBag.UserRank = appUser.Rank.Name;
-
+                ViewBag.LoggedInUserRank = appUser.Rank.Name;
             }
 
-            //vraca listu svih postova koji su odobreni za objavu i koji ce se ispisivati na naslovnoj stranici
-            var pMANewsContext = _context.Post.Include(p => p.Category).Include(p => p.Author).Where(p => p.Approved.Name == "Yes").OrderByDescending(p => p.DateUpdated);  //Where(p => p.Approved == true)
-            return View(await pMANewsContext.ToListAsync());
+            //vraca listu svih postova koji su odobreni za objavu i koji ce se ispisivati na naslovnoj stranici sortirani po datumu objave
+            var posts = _context.Post.Include(p => p.Category).Include(p => p.Author).Where(p => p.Approved.Name == "Yes").OrderByDescending(p => p.DateUpdated);  
+            return View(await posts.ToListAsync());
         }
 
-        // GET: /Posts/UserIndex
-        public async Task<IActionResult> UserIndex()
+        [AllowAnonymous]
+        // GET: /Posts/Filter/5
+        public async Task<IActionResult> Filter(int? id)
         {
-            //vraca listu svih postova koji se ispisuju u tablici ovisno o ulogiranom korisniku
+            if (_signInManager.IsSignedIn(User))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userName = User.FindFirstValue(ClaimTypes.Name);
+                ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
+                ViewBag.LoggedInUser = appUser;
+                ViewBag.LoggedInUserRank = appUser.Rank.Name;
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+            //vraca listu svih postova koji su odobreni za objavu i koji ce se ispisivati sortirani po datumu objave i po kategoriji
+            var posts = _context.Post.Include(p => p.Category).Include(p => p.Author).Where(p => p.CategoryId == id).Where(p => p.Approved.Name == "Yes").OrderByDescending(p => p.DateUpdated);
+            return View(await posts.ToListAsync());
+        }
+        
+        // GET: /Posts/MyPosts
+        public async Task<IActionResult> MyPosts()
+        {
+           var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+           var userName = User.FindFirstValue(ClaimTypes.Name);
+           ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
+           ViewBag.LoggedInUser = appUser;
+           ViewBag.LoggedInUserRank = appUser.Rank.Name;
+
+           //ispisuju se u tablici svi postovi ulogiranog autora sortirani po datumu ažuriranja 
+           var posts = _context.Post.Include(p => p.Category).Include(p => p.Approved).Include(p => p.Author).Where(p => p.Author.UserName == userName).OrderByDescending(p => p.DateUpdated);
+           return View(await posts.ToListAsync());
+
+        }
+
+        // GET: /Posts/AllPosts
+        public async Task<IActionResult> AllPosts()
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.FindFirstValue(ClaimTypes.Name); 
+            var userName = User.FindFirstValue(ClaimTypes.Name);
             ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
             ViewBag.LoggedInUser = appUser;
-            ViewBag.UserRank = appUser.Rank.Name;
-            if (IsInRank("admin") | IsInRank("editor"))
-            {
-                //ako je ulogirani korisnik s ulogom admin ili editor ispisuju mu se u tablici svi postovi 
-                var aprojectContext = _context.Post.Include(p => p.Category).Include(p => p.Approved).Include(p => p.Author).OrderBy(p => p.Approved.Name);
-                return View(await aprojectContext.ToListAsync());
+            ViewBag.LoggedInUserRank = appUser.Rank.Name;
 
-            }
-            else if(IsInRank("author"))
-            {
-                //ako je ulogirani korisnik s ulogom author ispisuju mu se u tablici svi postovi koje je on stvorio sortirani po datumu ažuriranja 
-                var aprojectContext = _context.Post.Include(p => p.Category).Include(p => p.Approved).Include(p => p.Author).Where(p => p.Author.UserName == userName).OrderByDescending(p => p.DateUpdated);
-                return View(await aprojectContext.ToListAsync());
+            //ispisuju se u tablici svi postovi sortirani po datumu ažuriranja 
+            var posts = _context.Post.Include(p => p.Category).Include(p => p.Approved).Include(p => p.Author).OrderBy(p => p.Approved.Name);
+            return View(await posts.ToListAsync());
 
-            }
-            else
-            {
-                //ako je ulogirani korisnik s ulogom user on nema pristupa ovom dijelu aplikacije pa ga se preusmjeri na naslovnu stranicu
-                return RedirectToAction(nameof(Index));
-            }
         }
+
+  
 
         [AllowAnonymous]
         // GET: Posts/Details/5
@@ -117,7 +139,7 @@ namespace PMANews.Controllers
         // GET: Posts/Create
         public IActionResult Create()
         {
-            if (IsInRank("admin") | IsInRank("author"))    //novi post moze stvoriti samo korisnik sa ulogom admina ili authora
+            if (IsInRank("admin") | IsInRank("author"))
             {
                 ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Name");
                 return View();
@@ -130,7 +152,7 @@ namespace PMANews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Content,CategoryId")] Post post)
         {
-            if(IsInRank("admin") | IsInRank("author"))     //novi post moze stvoriti samo korisnik sa ulogom admina ili authora
+            if(IsInRank("admin") | IsInRank("author"))   
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
                 var userName = User.FindFirstValue(ClaimTypes.Name); 
@@ -139,14 +161,14 @@ namespace PMANews.Controllers
                 post.Author = appUser;
                 post.AuthorId = userId;
 
-                post.ApprovedId = 2;  //u bazi u tablici Approved je pod id-om 1 "Yes", a pod 2 je "No", Approved "Yes" postavlja editor ili administrator kao odobrenje za objavu
+                post.ApprovedId = 2;  //u bazi u tablici Approved je pod id-om 1 "Yes", a pod 2 je "No", Approved "Yes" postavlja editor ili admin kao odobrenje za objavu
                 post.Approved = _context.Approved.FirstOrDefault(a => a.Id == 2);
 
                 if (ModelState.IsValid)
                 {
                     _context.Add(post);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("UserIndex","Posts");
+                    return RedirectToAction("MyPosts","Posts");
                 }
                 ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Name", post.Category.Name);
                 return View(post);
@@ -162,7 +184,7 @@ namespace PMANews.Controllers
             ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
             ViewBag.LoggedInUser = appUser;
 
-            if (IsInRank("admin") | IsInRank("editor") | IsInRank("author")) //post moze uredjivati korisnik sa ulogom admina, editora ili authora 
+            if (IsInRank("admin") | IsInRank("editor") | IsInRank("author"))
             {
                 if (id == null)
                 {
@@ -214,7 +236,14 @@ namespace PMANews.Controllers
                             throw;
                         }
                     }
-                    return RedirectToAction(nameof(Index));
+                    if (IsInRank("author"))
+                    {
+                        return RedirectToAction("MyPosts", "Posts");
+                    }
+                    else if (IsInRank("editor"))
+                    {
+                        return RedirectToAction("AllPosts", "Posts");
+                    }
                 }
                 ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Name", post.Category.Name);
                 ViewData["AuthorId"] = new SelectList(_context.Set<ApplicationUser>().Where(u => u.Rank.Name == "author"), "Id", "UserName", post.Author.UserName);
@@ -225,31 +254,7 @@ namespace PMANews.Controllers
 
         }
 
-        [AllowAnonymous]
-        // GET: /Posts/Filter/5
-        public async Task<IActionResult> Filter(int? id)
-        {
-            if (_signInManager.IsSignedIn(User))
-            {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var userName = User.FindFirstValue(ClaimTypes.Name);
-                ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
-                ViewBag.UserRank = appUser.Rank.Name;
-            }
-            if (id == null)
-            {
-                return NotFound();
-            }
-            //dohvaca postove prema parametru id kategorije sortirane po datumu i odobrene za objavu
-            var newsContext = _context.Post
-                .Include(p => p.Category)
-                .Include(p => p.Author)
-                .Where(p => p.CategoryId == id)
-                .Where(p => p.Approved.Name == "Yes")
-                .OrderByDescending(p => p.DateUpdated);
-            return View(await newsContext.ToListAsync());
-        }
-
+       
         // GET: Posts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -276,6 +281,14 @@ namespace PMANews.Controllers
             var post = await _context.Post.FindAsync(id);
             _context.Post.Remove(post);
             await _context.SaveChangesAsync();
+            if (IsInRank("author"))
+            {
+                return RedirectToAction("MyPosts", "Posts");
+            }
+            else if (IsInRank("admin") | IsInRank("editor"))
+            {
+                return RedirectToAction("AllPosts", "Posts");
+            }
             return RedirectToAction(nameof(Index));
         }
 

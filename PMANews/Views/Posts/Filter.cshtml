@@ -13,37 +13,37 @@
 }
 
 
-<div class="row">
-    <div class="container-fluid justify-content-center text-left">
-        <ol class="breadcrumb">
+    <div class="row">
+        <div class="container-fluid justify-content-center text-center">
             @if (SignInManager.IsSignedIn(User))
             {
-                @if (@ViewBag.UserRank == "admin" | @ViewBag.UserRank == "author")
-                {
-                    <li class="breadcrumb-item">
-                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex">My Posts</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a class="nav-link text-light" asp-controller="Posts" asp-action="Create">New post</a>
-                    </li>
-                }
-                @if (@ViewBag.UserRanke == "admin" | @ViewBag.UserRank == "editor")
-                {
-                    <li class="breadcrumb-item">
-                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex"> All Posts </a>
-                    </li>
-                }
-                @if (@ViewBag.UserRank == "admin")
-                {
-                    <li class="breadcrumb-item">
-                        <a class="nav-link text-light" asp-controller="Posts" asp-action="UserIndex"> All Posts </a>
-                    </li>
-                }
+                <ol class="breadcrumb">
+                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "author")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="Create">New post</a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "editor")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="AllPosts"> All Posts </a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin")
+                    {
+                        <li class="list-inline-item justify-content-end">
+                            <a class="nav-link text-light" href="/Identity/Account/Register">Register new user</a>
+                        </li>
+                    }
 
+                </ol>
             }
-        </ol>
+        </div>
     </div>
-</div>
 
 <div class="row">
     <div class="col-md-1"></div>
