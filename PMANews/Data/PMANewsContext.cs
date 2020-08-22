@@ -56,7 +56,6 @@ namespace PMANews.Data
                 .WithMany(p => p.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
@@ -76,12 +75,6 @@ namespace PMANews.Data
             modelBuilder.Entity<Post>()
                .Property(p => p.DateUpdated)
                .HasDefaultValueSql("getdate()");
-
-            
-                
-
-         
-
 
 
             //-----------------------------------------------

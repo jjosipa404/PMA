@@ -16,7 +16,7 @@
             @if (SignInManager.IsSignedIn(User))
             {
                 <ol class="breadcrumb">
-                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "author")
+                    @if (@ViewBag.LoggedInUserRank == "author")
                     {
                         <li class="list-inline-item">
                             <a class="nav-link text-light" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
@@ -28,11 +28,14 @@
                     @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "editor")
                     {
                         <li class="list-inline-item">
-                            <a class="nav-link text-light" asp-controller="Posts" asp-action="AllPosts"> All Posts </a>
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="AllPosts"> Posts </a>
                         </li>
                     }
                     @if (@ViewBag.LoggedInUserRank == "admin")
                     {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Category" asp-action="Index"> Categories </a>
+                        </li>
                         <li class="list-inline-item justify-content-end">
                             <a class="nav-link text-light" href="/Identity/Account/Register">Register new user</a>
                         </li>

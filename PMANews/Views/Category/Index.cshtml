@@ -1,41 +1,83 @@
 ﻿@model IEnumerable<PMANews.Areas.Identity.Data.Category>
 
+@using Microsoft.AspNetCore.Identity
+@using PMANews.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+   
+    <div class="row">
+        <div class="container-fluid justify-content-center text-center">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <ol class="breadcrumb">
+                    @if (@ViewBag.LoggedInUserRank == "author")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="Create">New post</a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin" | @ViewBag.LoggedInUserRank == "editor")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Posts" asp-action="AllPosts"> Posts </a>
+                        </li>
+                    }
+                    @if (@ViewBag.LoggedInUserRank == "admin")
+                    {
+                        <li class="list-inline-item">
+                            <a class="nav-link text-light" asp-controller="Category" asp-action="Index"> Categories </a>
+                        </li>
+                        <li class="list-inline-item justify-content-end">
+                            <a class="nav-link text-light" href="/Identity/Account/Register">Register new user</a>
+                        </li>
+                    }
 
-<h1>Index</h1>
+                </ol>
+            }
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.Id  }) |
-                @Html.ActionLink("Delete", "Delete", new {  id=item.Id  })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+
+<div class="container-fluid justify-content-center text-left">
+    @if (Model.Count() != 0 & Model != null)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Category</th>
+                    <th><a asp-controller="Category" asp-action="Create" class="text-success">New</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>
+                        <a class="text-info text-muted" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a class="text-danger text-muted" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="container justify-content-center text-center">
+            <h5>There are no posts to show.</h5>
+        </div>
+    }
+</div>

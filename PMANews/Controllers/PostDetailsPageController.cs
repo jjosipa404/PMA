@@ -33,8 +33,8 @@ namespace PMANews.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userName = User.FindFirstValue(ClaimTypes.Name);
-                ApplicationUser appUser = await _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefaultAsync();
-                ViewBag.UserRank = appUser.Rank.Name;
+                ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
+                ViewBag.LoggedInUserRank = appUser.Rank.Name;
             }
 
             PostDetailsPageModels models = new PostDetailsPageModels();

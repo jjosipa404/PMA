@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +29,14 @@ namespace PMANews.Controllers
             _signInManager = signInManager;
         }
 
-        [AllowAnonymous]
         // GET: /Category/Index
         public async Task<IActionResult> Index()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            ApplicationUser appUser = _context.User.Include(u => u.Rank).Where(u => u.Id == userId).FirstOrDefault();
+            ViewBag.LoggedInUserRank = appUser.Rank.Name;
+
             var posts = _context.Category;
             return View(await posts.ToListAsync());
         }
@@ -45,15 +51,18 @@ namespace PMANews.Controllers
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
+        public async Task<IActionResult> Create([Bind("Name")] Category category)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
+                _context.Category.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            else
+            {
+                return View(category);
+            }
         }
         
         // GET: Category/Edit/5
@@ -129,6 +138,7 @@ namespace PMANews.Controllers
         {
             var cat = await _context.Category.FindAsync(id);
             _context.Category.Remove(cat);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
